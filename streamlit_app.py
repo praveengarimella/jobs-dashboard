@@ -177,3 +177,31 @@ with tab4:
 
     st.plotly_chart(fig)
     # Create your Plotly charts here (using industry_data and industry_dist_data)
+
+    st.subheader("Industry Specific Job Function Counts")
+
+    select_tab4_industry = st.selectbox(
+        'Select Industry:',
+        industry_counts['Industry'].unique()  # Skip the first column as it contains categories
+    )
+
+    filtered_tab4_jobs = job_listings[
+        job_listings["IQ_INDUSTRY_CLASSIFICATION"].isin(list[select_tab4_industry])
+    ]
+
+    filtered_tab4_jobs_counts = filtered_tab4_jobs.groupby('job_function').count()['title'].reset_index()
+    filtered_tab4_jobs_counts.columns = ['Job Function', 'Open Positions']
+    filtered_tab4_jobs_counts = filtered_tab4_jobs_counts.sort_values(by='Open Positions', ascending=False)
+    
+    fig2 = px.bar(
+        filtered_tab4_jobs_counts,
+        x='Job Function',
+        y='Open Positions',
+        title='Open Positions by Industry',
+        color='Job Function',
+        color_discrete_sequence=px.colors.qualitative.Vivid,
+        text='Open Positions',
+        hover_data={'Job Function': True, 'Open Positions': True}
+    )
+
+    st.plotly_chart(fig2)
